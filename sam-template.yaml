@@ -107,3 +107,71 @@ Resources:
             Method: GET
             RestApiId:
               Ref: BudgetifyAPI
+
+  ListUsersLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-users-lambda
+      Description: Microservice for getting list of users
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: user-service/list-users-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/users
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+
+  DeleteUserLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: delete-user-lambda
+      Description: Microservice for deleting users
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: user-service/delete-user-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/users/{id}
+            Method: DELETE
+            RestApiId:
+              Ref: BudgetifyAPI
