@@ -1,0 +1,60 @@
+# sam build --template sam-template.yaml
+# sam deploy --s3-bucket=budgetify-artifacts --stack-name=budgetify-api-stack --parameter-overrides dbEndpoint=budgetify-dev.cyyklmgt4uyj.eu-west-2.rds.amazonaws.com , dbName=budgetifydb , dbUsername=root , dbPassword=budgetify-password
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: AWS Serverless Lambda -- Budgetify API
+
+Parameters:
+  dbEndpoint:
+    Type: String
+  dbName:
+    Type: String
+  dbUsername:
+    Type: String
+  dbPassword:
+    Type: String
+
+Resources:
+  BudgetifyAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: STAGE
+      Cors:
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigin: "'*'"
+
+  CreateUserLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-user-lambda
+      Description: Microservice for creating users
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: user-service/create-user-lambda
+      Role: arn:aws:iam::262391914540:role/iam_for_lambda
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-04c6545de21aa0d07
+        SubnetIds:
+          - subnet-092b3d3547ee292e0
+          - subnet-0c4cbf3e8032d5f28
+          - subnet-05508397166affd81
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/users
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI

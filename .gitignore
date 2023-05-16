@@ -1,0 +1,12 @@
+target/
+.idea
+layer.zip
+events
+.aws-sam
+samconfig.toml
+*/dependency-reduced-pom.xml
+*/target
+*/*.iml
+*/.DS_Store
+.DS_Store
+budgetify-api.iml
