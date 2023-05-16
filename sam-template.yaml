@@ -14,6 +14,21 @@ Parameters:
     Type: String
   dbPassword:
     Type: String
+  securityGroup:
+    Type: String
+    Default: sg-04c6545de21aa0d07
+  subnetId1:
+    Type: String
+    Default: subnet-092b3d3547ee292e0
+  subnetId2:
+    Type: String
+    Default: subnet-0c4cbf3e8032d5f28
+  subnetId3:
+    Type: String
+    Default: subnet-05508397166affd81
+  iamRole:
+    Type: String
+    Default: arn:aws:iam::262391914540:role/iam_for_lambda
 
 Resources:
   BudgetifyAPI:
@@ -36,7 +51,7 @@ Resources:
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
       CodeUri: user-service/create-user-lambda
-      Role: arn:aws:iam::262391914540:role/iam_for_lambda
+      Role: !Ref iamRole
       Environment:
         Variables:
           DB_ENDPOINT: !Ref dbEndpoint
@@ -45,16 +60,50 @@ Resources:
           DB_PASSWORD: !Ref dbPassword
       VpcConfig:
         SecurityGroupIds:
-          - sg-04c6545de21aa0d07
+          - !Ref securityGroup
         SubnetIds:
-          - subnet-092b3d3547ee292e0
-          - subnet-0c4cbf3e8032d5f28
-          - subnet-05508397166affd81
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
       Events:
         BudgetifyAPI:
           Type: Api
           Properties:
             Path: /api/users
             Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+
+  GetUserLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-user-lambda
+      Description: Microservice for getting user details
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: user-service/get-user-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/users/{id}
+            Method: GET
             RestApiId:
               Ref: BudgetifyAPI
