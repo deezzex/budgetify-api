@@ -264,3 +264,111 @@ Resources:
               Ref: BudgetifyAPI
       Layers:
         - !Ref CommonLayer
+
+  CreateAccountLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-account-lambda
+      Description: Microservice for creating account
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: account-service/create-account-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/accounts
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  GetAccountLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-account-lambda
+      Description: Microservice for getting account details
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: account-service/get-account-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/accounts/{id}
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  ListAccountsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-accounts-lambda
+      Description: Microservice for getting list of accounts
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: account-service/list-accounts-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/accounts
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer

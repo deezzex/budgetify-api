@@ -14,19 +14,19 @@ import java.util.Random;
 
 @RequiredArgsConstructor
 public class SessionService {
-    private final UserDao userDao;
-    private final SessionDao sessionDao;
+    private final UserDao baseUserDao;
+    private final SessionDao baseSessionDao;
 
     public LoginResponseDto createSession(LoginDto loginDto) {
         RequestValidator.validate(loginDto);
 
-        User user = userDao.findByEmail(loginDto.getEmail());
+        User user = baseUserDao.findByEmail(loginDto.getEmail());
 
         checkPassword(loginDto.getPassword(), user.getPassword());
 
         Session session = buildSession(user);
 
-        sessionDao.save(session);
+        baseSessionDao.save(session);
 
         return LoginResponseDto.builder()
                 .email(user.getEmail())

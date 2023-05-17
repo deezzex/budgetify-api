@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.budgetify.config.DataSourceConfig;
+import com.budgetify.dao.BaseCountryDao;
 import com.budgetify.dao.UserDao;
 import com.budgetify.dto.UserResponseDto;
 import com.budgetify.dto.UserSaveDto;
@@ -20,12 +21,14 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
     private static final DataSource dataSource;
     private static final UserDao userDao;
+    private static final BaseCountryDao countryDao;
     private static final UserService userService;
 
     static {
         dataSource = DataSourceConfig.getDataSource();
         userDao = new UserDao(dataSource);
-        userService = new UserService(userDao);
+        countryDao = new BaseCountryDao(dataSource);
+        userService = new UserService(userDao, countryDao);
     }
 
     @Override

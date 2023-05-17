@@ -1,6 +1,7 @@
 package com.budgetify.security;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.budgetify.dao.BaseSessionDao;
 import com.budgetify.entity.Session;
 import com.budgetify.exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -9,20 +10,20 @@ import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 public class SecurityService {
-    private final SessionDao sessionDao;
+    private final BaseSessionDao baseSessionDao;
 
-    public void validateRequest(APIGatewayProxyRequestEvent request) {
-        validateSession(request);
+    public int validateRequest(APIGatewayProxyRequestEvent request) {
+        return validateSession(request);
     }
 
-    private void validateSession(APIGatewayProxyRequestEvent request) {
+    private int validateSession(APIGatewayProxyRequestEvent request) {
         String sessionHeader = request.getHeaders().get("session");
 
         if (sessionHeader == null) {
             throw new ApiException("Session is not set.");
         }
 
-        Session session = sessionDao.findById(sessionHeader);
+        Session session = baseSessionDao.findById(sessionHeader);
 
         if (!session.getStatus().equals("A") || session.getClosedAt() != null) {
             throw new ApiException("Session is inactive.");
@@ -33,11 +34,13 @@ public class SecurityService {
         if (session.getUpdatedAt().plusMinutes(5).isBefore(now)) {
             session.setClosedAt(now);
             session.setStatus("I");
-            sessionDao.update(session);
+            baseSessionDao.update(session);
             throw new ApiException("Session is expired.");
         }
 
         session.setUpdatedAt(now);
-        sessionDao.update(session);
+        baseSessionDao.update(session);
+
+        return session.getUserId();
     }
 }

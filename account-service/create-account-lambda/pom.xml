@@ -41,5 +41,10 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.budgetify</groupId>
+            <artifactId>common-library</artifactId>
+            <version>1</version>
+        </dependency>
     </dependencies>
 </project>

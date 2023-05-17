@@ -13,5 +13,5 @@ public class UserResponseDto {
     private String phoneNumber;
     private String passportNumber;
     private String role;
-    private Integer countryId;
+    private String country;
 }

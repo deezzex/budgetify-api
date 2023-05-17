@@ -6,10 +6,11 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.budgetify.config.DataSourceConfig;
-import com.budgetify.dao.UserDao;
+import com.budgetify.dao.BaseSessionDao;
+import com.budgetify.dao.BaseUserDao;
 import com.budgetify.dto.UserResponseDto;
+import com.budgetify.security.AuthorityService;
 import com.budgetify.security.SecurityService;
-import com.budgetify.security.SessionDao;
 import com.budgetify.service.UserService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +22,19 @@ import java.util.List;
 public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final DataSource dataSource;
-    private static final UserDao userDao;
+    private static final BaseUserDao userDao;
     private static final UserService userService;
-    private static final SessionDao sessionDao;
+    private static final BaseSessionDao sessionDao;
     private static final SecurityService securityService;
+    private static final AuthorityService authorityService;
 
     static {
         dataSource = DataSourceConfig.getDataSource();
-        userDao = new UserDao(dataSource);
+        userDao = new BaseUserDao(dataSource);
         userService = new UserService(userDao);
-        sessionDao = new SessionDao(dataSource);
+        sessionDao = new BaseSessionDao(dataSource);
         securityService = new SecurityService(sessionDao);
+        authorityService = new AuthorityService(userDao);
     }
 
     @Override
@@ -39,7 +42,8 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         Gson gson = new Gson();
 
         try {
-            securityService.validateRequest(request);
+            int userId = securityService.validateRequest(request);
+            authorityService.validateAdminAccess(userId);
 
             List<UserResponseDto> responseDtoList = userService.getAllUsers();
 

@@ -1,8 +1,10 @@
 package com.budgetify.service;
 
+import com.budgetify.dao.BaseCountryDao;
 import com.budgetify.dao.UserDao;
 import com.budgetify.dto.UserResponseDto;
 import com.budgetify.dto.UserSaveDto;
+import com.budgetify.entity.Country;
 import com.budgetify.entity.User;
 import com.budgetify.exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserDao userDao;
+    private final BaseCountryDao countryDao;
 
     public UserResponseDto createUser(UserSaveDto userSaveDto) {
         RequestValidator.validate(userSaveDto);
@@ -22,6 +25,7 @@ public class UserService {
 
         userSaveDto.setPassword(encryptedPassword);
 
+        Country country = countryDao.findById(userSaveDto.getCountryId());
         int userId = userDao.save(userSaveDto);
 
         return UserResponseDto.builder()
@@ -32,7 +36,7 @@ public class UserService {
                 .phoneNumber(userSaveDto.getPhoneNumber())
                 .passportNumber(userSaveDto.getPassportNumber())
                 .role(userSaveDto.getRole())
-                .countryId(userSaveDto.getCountryId())
+                .country(country.getName())
                 .build();
     }
 

@@ -1,7 +1,6 @@
 package com.budgetify.dao;
 
 import com.budgetify.entity.Session;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import javax.sql.DataSource;
@@ -9,11 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class SessionDao {
-    private final JdbcTemplate jdbcTemplate;
-
+public class SessionDao extends BaseSessionDao {
     public SessionDao(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
+        super(dataSource);
     }
 
     public void save(Session session) {

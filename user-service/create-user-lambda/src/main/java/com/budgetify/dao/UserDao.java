@@ -1,9 +1,9 @@
 package com.budgetify.dao;
 
+import com.budgetify.conts.SQLQuery;
 import com.budgetify.dto.UserSaveDto;
 import com.budgetify.entity.User;
 import com.budgetify.entity.mapper.UserMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import javax.sql.DataSource;
@@ -13,11 +13,10 @@ import java.util.Map;
 import java.util.Optional;
 
 
-public class UserDao {
-    private final JdbcTemplate jdbcTemplate;
+public class UserDao extends BaseUserDao {
 
     public UserDao(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
+        super(dataSource);
     }
 
     public int save(UserSaveDto userSaveDto) {
