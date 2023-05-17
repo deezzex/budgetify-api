@@ -17,7 +17,7 @@ public class SessionService {
 
         Session session = sessionDao.findById(logoutDto.getSession());
 
-        if (!session.getStatus().equals("A") || session.getClosedAt() != null){
+        if (!session.getStatus().equals("A") || session.getClosedAt() != null) {
             throw new ApiException("Session is already inactive.");
         }
 

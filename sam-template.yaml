@@ -40,6 +40,15 @@ Resources:
         AllowMethods: "'*'"
         AllowOrigin: "'*'"
 
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - java11
+      ContentUri: ./common-library.zip
+      Description: Common library
+      LayerName: common-layer
+
   CreateUserLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -73,6 +82,8 @@ Resources:
             Method: POST
             RestApiId:
               Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
 
   GetUserLambda:
     Type: AWS::Serverless::Function
@@ -107,6 +118,8 @@ Resources:
             Method: GET
             RestApiId:
               Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
 
   ListUsersLambda:
     Type: AWS::Serverless::Function
@@ -141,6 +154,8 @@ Resources:
             Method: GET
             RestApiId:
               Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
 
   DeleteUserLambda:
     Type: AWS::Serverless::Function
@@ -175,6 +190,8 @@ Resources:
             Method: DELETE
             RestApiId:
               Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
 
   LoginLambda:
     Type: AWS::Serverless::Function
@@ -209,6 +226,8 @@ Resources:
             Method: POST
             RestApiId:
               Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
 
   LogoutLambda:
     Type: AWS::Serverless::Function
@@ -243,3 +262,5 @@ Resources:
             Method: POST
             RestApiId:
               Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer

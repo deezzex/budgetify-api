@@ -9,6 +9,8 @@ import com.budgetify.config.DataSourceConfig;
 import com.budgetify.dao.CountryDao;
 import com.budgetify.dao.UserDao;
 import com.budgetify.dto.UserResponseDto;
+import com.budgetify.security.SecurityService;
+import com.budgetify.security.SessionDao;
 import com.budgetify.service.UserService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -22,12 +24,16 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     private static final UserDao userDao;
     private static final CountryDao countryDao;
     private static final UserService userService;
+    private static final SessionDao sessionDao;
+    private static final SecurityService securityService;
 
     static {
         dataSource = DataSourceConfig.getDataSource();
         userDao = new UserDao(dataSource);
         countryDao = new CountryDao(dataSource);
         userService = new UserService(userDao, countryDao);
+        sessionDao = new SessionDao(dataSource);
+        securityService = new SecurityService(sessionDao);
     }
 
     @Override
@@ -35,6 +41,8 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         Gson gson = new Gson();
 
         try {
+            securityService.validateRequest(request);
+
             String id = request.getPathParameters().get("id");
 
             UserResponseDto userResponseDto = userService.findUser(Integer.valueOf(id));

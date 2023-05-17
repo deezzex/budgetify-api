@@ -7,6 +7,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.budgetify.config.DataSourceConfig;
 import com.budgetify.dao.UserDao;
+import com.budgetify.security.SecurityService;
+import com.budgetify.security.SessionDao;
 import com.budgetify.service.UserService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +21,15 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     private static final DataSource dataSource;
     private static final UserDao userDao;
     private static final UserService userService;
+    private static final SessionDao sessionDao;
+    private static final SecurityService securityService;
 
     static {
         dataSource = DataSourceConfig.getDataSource();
         userDao = new UserDao(dataSource);
         userService = new UserService(userDao);
+        sessionDao = new SessionDao(dataSource);
+        securityService = new SecurityService(sessionDao);
     }
 
     @Override
@@ -31,6 +37,8 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         Gson gson = new Gson();
 
         try {
+            securityService.validateRequest(request);
+
             String id = request.getPathParameters().get("id");
 
             userService.deleteUser(Integer.valueOf(id));
