@@ -20,8 +20,6 @@ public class AccountService {
     private final BaseUserDao baseUserDao;
 
     public AccountResponseDto createAccount(AccountSaveDto accountSaveDto) {
-        RequestValidator.validate(accountSaveDto);
-
         Currency currency = currencyDao.findById(accountSaveDto.getCurrencyId());
         User user = baseUserDao.findById(accountSaveDto.getUserId());
 

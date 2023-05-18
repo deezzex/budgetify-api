@@ -5,47 +5,26 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.budgetify.config.DataSourceConfig;
-import com.budgetify.dao.BaseSessionDao;
-import com.budgetify.dao.UserDao;
-import com.budgetify.security.AuthorityService;
-import com.budgetify.security.SecurityService;
-import com.budgetify.service.UserService;
+import com.budgetify.util.Initializer;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.sql.DataSource;
 
 @Slf4j
 public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private static final DataSource dataSource;
-    private static final UserDao userDao;
-    private static final UserService userService;
-    private static final BaseSessionDao sessionDao;
-    private static final SecurityService securityService;
-    private static final AuthorityService authorityService;
-
-    static {
-        dataSource = DataSourceConfig.getDataSource();
-        userDao = new UserDao(dataSource);
-        userService = new UserService(userDao);
-        sessionDao = new BaseSessionDao(dataSource);
-        securityService = new SecurityService(sessionDao);
-        authorityService = new AuthorityService(userDao);
-    }
+    private static final Initializer initializer = Initializer.getInstance();
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
         Gson gson = new Gson();
 
         try {
-            int userId = securityService.validateRequest(request);
-            authorityService.validateAdminAccess(userId);
+            int userId = initializer.getSecurityService().validateRequest(request);
+            initializer.getAuthorityService().validateAdminAccess(userId);
 
             String id = request.getPathParameters().get("id");
 
-            userService.deleteUser(Integer.valueOf(id));
+            initializer.getUserService().deleteUser(Integer.valueOf(id));
 
             return new APIGatewayProxyResponseEvent()
                     .withBody(gson.toJson("Deleted."))

@@ -13,6 +13,7 @@ import com.budgetify.dto.AccountResponseDto;
 import com.budgetify.security.AuthorityService;
 import com.budgetify.security.SecurityService;
 import com.budgetify.service.AccountService;
+import com.budgetify.util.Initializer;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,35 +23,17 @@ import java.util.List;
 @Slf4j
 public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private static final DataSource dataSource;
-    private static final BaseSessionDao sessionDao;
-    private static final BaseUserDao userDao;
-    private static final SecurityService securityService;
-    private static final AuthorityService authorityService;
-
-    private static final BaseAccountDao accountDao;
-    private static final AccountService accountService;
-
-    static {
-        dataSource = DataSourceConfig.getDataSource();
-        sessionDao = new BaseSessionDao(dataSource);
-        userDao = new BaseUserDao(dataSource);
-        securityService = new SecurityService(sessionDao);
-        authorityService = new AuthorityService(userDao);
-
-        accountDao = new BaseAccountDao(dataSource);
-        accountService = new AccountService(accountDao);
-    }
+    private static final Initializer initializer = Initializer.getInstance();
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
         Gson gson = new Gson();
 
         try {
-            int userId = securityService.validateRequest(request);
-            authorityService.validateAdminAccess(userId);
+            int userId = initializer.getSecurityService().validateRequest(request);
+            initializer.getAuthorityService().validateAdminAccess(userId);
 
-            List<AccountResponseDto> responseDtoList = accountService.getAllAccounts();
+            List<AccountResponseDto> responseDtoList = initializer.getAccountService().getAllAccounts();
 
             return new APIGatewayProxyResponseEvent()
                     .withBody(gson.toJson(responseDtoList))
