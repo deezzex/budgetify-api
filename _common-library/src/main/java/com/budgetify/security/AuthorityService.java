@@ -13,12 +13,10 @@ public class AuthorityService {
     private final BaseUserDao userDao;
     private final ResourceDao resourceDao;
 
-    public void validateAdminAccess(Integer userId) {
+    public boolean validateAdminAccess(Integer userId) {
         User user = userDao.findById(userId);
 
-        if (!user.getRole().equals(Role.ADMIN.name())) {
-            throw new ApiException("The resource requires administrator access.");
-        }
+        return user.getRole().equals(Role.ADMIN.name());
     }
 
     public void validateResourceAccess(Integer userId, Integer resourceId, Resource resource) {

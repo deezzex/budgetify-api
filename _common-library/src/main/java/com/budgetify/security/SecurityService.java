@@ -1,6 +1,7 @@
 package com.budgetify.security;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.budgetify.conts.Role;
 import com.budgetify.dao.BaseSessionDao;
 import com.budgetify.entity.Session;
 import com.budgetify.exception.ApiException;

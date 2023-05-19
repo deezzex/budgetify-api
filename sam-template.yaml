@@ -372,3 +372,111 @@ Resources:
               Ref: BudgetifyAPI
       Layers:
         - !Ref CommonLayer
+
+  CreateTransactionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-transaction-lambda
+      Description: Microservice for creating transaction
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: transaction-service/create-transaction-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/transactions
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  GetTransactionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-transaction-lambda
+      Description: Microservice for getting transaction details
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: transaction-service/get-transaction-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/transactions/{id}
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  ListTransactionsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-transactions-lambda
+      Description: Microservice for getting list of transaction
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: transaction-service/list-transactions-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/transactions
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer

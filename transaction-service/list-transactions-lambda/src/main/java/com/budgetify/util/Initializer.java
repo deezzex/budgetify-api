@@ -1,13 +1,13 @@
 package com.budgetify.util;
 
 import com.budgetify.config.DataSourceConfig;
-import com.budgetify.dao.AccountDao;
 import com.budgetify.dao.BaseSessionDao;
 import com.budgetify.dao.BaseUserDao;
 import com.budgetify.dao.ResourceDao;
+import com.budgetify.dao.TransactionDao;
 import com.budgetify.security.AuthorityService;
 import com.budgetify.security.SecurityService;
-import com.budgetify.service.AccountService;
+import com.budgetify.service.TransactionService;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -17,22 +17,22 @@ public class Initializer {
     private static Initializer instance;
     private final DataSource dataSource;
     private final BaseSessionDao sessionDao;
-    private final BaseUserDao userDao;
     private final SecurityService securityService;
-    private final AuthorityService authorityService;
-    private final AccountDao accountDao;
+    private final BaseUserDao userDao;
+    private final TransactionDao transactionDao;
+    private final TransactionService transactionService;
     private final ResourceDao resourceDao;
-    private final AccountService accountService;
+    private final AuthorityService authorityService;
 
     private Initializer() {
         dataSource = DataSourceConfig.getDataSource();
         sessionDao = new BaseSessionDao(dataSource);
-        userDao = new BaseUserDao(dataSource);
         securityService = new SecurityService(sessionDao);
+        userDao = new BaseUserDao(dataSource);
+        transactionDao = new TransactionDao(dataSource);
+        transactionService = new TransactionService(transactionDao);
         resourceDao = new ResourceDao(dataSource);
         authorityService = new AuthorityService(userDao, resourceDao);
-        accountDao = new AccountDao(dataSource);
-        accountService = new AccountService(accountDao);
     }
 
     public static Initializer getInstance() {

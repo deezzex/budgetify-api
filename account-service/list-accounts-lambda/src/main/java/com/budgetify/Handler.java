@@ -31,9 +31,17 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         try {
             int userId = initializer.getSecurityService().validateRequest(request);
-            initializer.getAuthorityService().validateAdminAccess(userId);
+            boolean isAdmin = initializer.getAuthorityService().validateAdminAccess(userId);
 
-            List<AccountResponseDto> responseDtoList = initializer.getAccountService().getAllAccounts();
+            AccountService accountService = initializer.getAccountService();
+
+            List<AccountResponseDto> responseDtoList;
+
+            if (!isAdmin){
+                responseDtoList = accountService.getAllAccountsByUserId(userId);
+            }else {
+                responseDtoList = accountService.getAllAccounts();
+            }
 
             return new APIGatewayProxyResponseEvent()
                     .withBody(gson.toJson(responseDtoList))

@@ -22,11 +22,21 @@ public class SQLQuery {
     //ACCOUNT
     public static final String SELECT_ACCOUNT_BY_ID = "SELECT * FROM accounts WHERE id = ?;";
     public static final String SELECT_ACCOUNTS= "SELECT * FROM accounts;";
+    public static final String SELECT_ACCOUNTS_BY_USER_ID = "SELECT * FROM accounts WHERE user_id = ?;";
+    public static final String UPDATE_ACCOUNT_BALANCE= "UPDATE accounts SET balance = ? WHERE id = ?;";
+    //TRANSACTION
+    public static final String SELECT_TRANSACTION_BY_ID = "SELECT * FROM transactions WHERE id = ?;";
+    public static final String SELECT_TRANSACTIONS_BY_ACCOUNT_ID = "SELECT * FROM transactions WHERE account_id = ?;";
+    public static final String SELECT_TRANSACTIONS = "SELECT * FROM transactions;";
+    //CATEGORY
+    public static final String SELECT_CATEGORY_BY_ID = "SELECT * FROM categories WHERE id = ?;";
+    public static final String SELECT_CATEGORIES = "SELECT * FROM categories;";
 
     //RESOURCE
     public static final String SELECT_ACCOUNT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = ?;";
-    public static final String SELECT_TRANSACTION_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM transactions WHERE id = ?));";
-    public static final String SELECT_BUDGET_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM budgets WHERE id = ?));";
-    public static final String SELECT_REPORT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM budgets WHERE id = (SELECT budget_id FROM reports WHERE id = ?))));";
-    public static final String SELECT_DEPOSIT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM deposits WHERE id = ?));";
+    public static final String SELECT_TRANSACTION_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM transactions WHERE id = ?);";
+    public static final String SELECT_BUDGET_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM budgets WHERE id = ?);";
+    public static final String SELECT_REPORT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM budgets WHERE id = (SELECT budget_id FROM reports WHERE id = ?));";
+    public static final String SELECT_DEPOSIT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM deposits WHERE id = ?);";
+
 }

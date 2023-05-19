@@ -5,13 +5,11 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.budgetify.dto.UserResponseDto;
-import com.budgetify.exception.ApiException;
+import com.budgetify.conts.Resource;
+import com.budgetify.dto.TransactionResponseDto;
 import com.budgetify.util.Initializer;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -23,17 +21,15 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         Gson gson = new Gson();
 
         try {
+            String id = request.getPathParameters().get("id");
+
             int userId = initializer.getSecurityService().validateRequest(request);
-            boolean isAdmin = initializer.getAuthorityService().validateAdminAccess(userId);
+            initializer.getAuthorityService().validateResourceAccess(userId, Integer.valueOf(id), Resource.TRANSACTION);
 
-            if (!isAdmin){
-                throw new ApiException("Resource requires administrator access");
-            }
-
-            List<UserResponseDto> responseDtoList = initializer.getUserService().getAllUsers();
+            TransactionResponseDto transactionResponseDto = initializer.getTransactionService().getTransaction(Integer.valueOf(id));
 
             return new APIGatewayProxyResponseEvent()
-                    .withBody(gson.toJson(responseDtoList))
+                    .withBody(gson.toJson(transactionResponseDto))
                     .withStatusCode(200);
         } catch (Exception exception) {
             return new APIGatewayProxyResponseEvent()

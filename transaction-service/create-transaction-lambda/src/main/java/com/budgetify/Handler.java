@@ -5,13 +5,13 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.budgetify.dto.UserResponseDto;
-import com.budgetify.exception.ApiException;
+import com.budgetify.conts.Resource;
+import com.budgetify.dto.TransactionCreateDto;
+import com.budgetify.dto.TransactionResponseDto;
+import com.budgetify.service.RequestValidator;
 import com.budgetify.util.Initializer;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -23,18 +23,18 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         Gson gson = new Gson();
 
         try {
+            TransactionCreateDto transactionCreateDto = gson.fromJson(request.getBody(), TransactionCreateDto.class);
+
+            RequestValidator.validate(transactionCreateDto);
+
             int userId = initializer.getSecurityService().validateRequest(request);
-            boolean isAdmin = initializer.getAuthorityService().validateAdminAccess(userId);
+            initializer.getAuthorityService().validateResourceAccess(userId, transactionCreateDto.getAccountId(), Resource.ACCOUNT);
 
-            if (!isAdmin){
-                throw new ApiException("Resource requires administrator access");
-            }
-
-            List<UserResponseDto> responseDtoList = initializer.getUserService().getAllUsers();
+            TransactionResponseDto transactionResponseDto = initializer.getTransactionService().createTransaction(transactionCreateDto);
 
             return new APIGatewayProxyResponseEvent()
-                    .withBody(gson.toJson(responseDtoList))
-                    .withStatusCode(200);
+                    .withBody(gson.toJson(transactionResponseDto))
+                    .withStatusCode(201);
         } catch (Exception exception) {
             return new APIGatewayProxyResponseEvent()
                     .withBody(gson.toJson(exception.getMessage()))
