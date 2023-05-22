@@ -1,4 +1,4 @@
-package com.budgetify.conts;
+package com.budgetify.constant;
 
 public enum Role {
     ADMIN, USER

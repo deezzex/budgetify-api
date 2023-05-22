@@ -1,0 +1,24 @@
+package com.budgetify.service;
+
+import com.budgetify.dto.ReportCreateDto;
+import com.budgetify.exception.ApiException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class RequestValidator {
+    public static void validate(ReportCreateDto reportCreateDto) {
+        List<String> unsetFields = new ArrayList<>();
+
+        if (reportCreateDto.getBudgetId() == null) {
+            unsetFields.add("budgetId");
+        }
+        if (reportCreateDto.getCreatedAt() == null) {
+            unsetFields.add("createdAt");
+        }
+
+        if (!unsetFields.isEmpty()) {
+            throw new ApiException("Some required fields are not set in the request: " + unsetFields);
+        }
+    }
+}

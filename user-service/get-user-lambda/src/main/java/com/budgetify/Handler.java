@@ -5,19 +5,11 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.budgetify.config.DataSourceConfig;
-import com.budgetify.conts.Resource;
-import com.budgetify.dao.BaseCountryDao;
-import com.budgetify.dao.BaseSessionDao;
-import com.budgetify.dao.BaseUserDao;
+import com.budgetify.constant.Resource;
 import com.budgetify.dto.UserResponseDto;
-import com.budgetify.security.SecurityService;
-import com.budgetify.service.UserService;
 import com.budgetify.util.Initializer;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.sql.DataSource;
 
 @Slf4j
 public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {

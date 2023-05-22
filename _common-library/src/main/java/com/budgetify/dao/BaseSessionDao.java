@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import java.util.List;
 
-import static com.budgetify.conts.SQLQuery.SELECT_SESSION_BY_ID;
-import static com.budgetify.conts.SQLQuery.UPDATE_SESSION_UPDATED_AT_AND_CLOSED_AT_AND_STATUS;
+import static com.budgetify.constant.SQLQuery.SELECT_SESSION_BY_ID;
+import static com.budgetify.constant.SQLQuery.UPDATE_SESSION_UPDATED_AT_AND_CLOSED_AT_AND_STATUS;
 
 public class BaseSessionDao {
     protected final JdbcTemplate jdbcTemplate;

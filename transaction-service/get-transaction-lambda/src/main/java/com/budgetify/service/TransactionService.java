@@ -1,6 +1,6 @@
 package com.budgetify.service;
 
-import com.budgetify.conts.Formatter;
+import com.budgetify.constant.Formatter;
 import com.budgetify.dao.BaseAccountDao;
 import com.budgetify.dao.BaseCategoryDao;
 import com.budgetify.dao.BaseTransactionDao;

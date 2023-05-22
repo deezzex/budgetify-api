@@ -1,6 +1,6 @@
 package com.budgetify.service;
 
-import com.budgetify.conts.Formatter;
+import com.budgetify.constant.Formatter;
 import com.budgetify.dao.AccountDao;
 import com.budgetify.dao.BaseCategoryDao;
 import com.budgetify.dao.TransactionDao;
@@ -20,6 +20,7 @@ public class TransactionService {
     private final TransactionDao transactionDao;
     private final BaseCategoryDao categoryDao;
     private final AccountDao accountDao;
+    private final BudgetService budgetService;
 
     public TransactionResponseDto createTransaction(TransactionCreateDto transactionCreateDto) {
         Account account = accountDao.findById(transactionCreateDto.getAccountId());
@@ -30,7 +31,13 @@ public class TransactionService {
         updateAccountBalance(account, transactionCreateDto, category);
 
         Transaction transaction = buildTransaction(transactionCreateDto);
+
         int transactionId = transactionDao.save(transaction);
+
+        transaction.setId(transactionId);
+
+        budgetService.updateBudgetSpent(transaction);
+//        SQSSender.sendMessage(transaction);
 
         return TransactionResponseDto.builder()
                 .id(transactionId)

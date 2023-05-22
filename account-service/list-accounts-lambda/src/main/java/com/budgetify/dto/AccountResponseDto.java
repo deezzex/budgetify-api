@@ -1,6 +1,6 @@
 package com.budgetify.dto;
 
-import com.budgetify.conts.Formatter;
+import com.budgetify.constant.Formatter;
 import com.budgetify.entity.Account;
 import lombok.Builder;
 import lombok.Data;

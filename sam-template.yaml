@@ -49,6 +49,12 @@ Resources:
       Description: Common library
       LayerName: common-layer
 
+  BudgetQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: budgets.fifo
+      FifoQueue: true
+
   CreateUserLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -475,6 +481,292 @@ Resources:
           Type: Api
           Properties:
             Path: /api/transactions
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  CreateBudgetLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-budget-lambda
+      Description: Microservice for creating budget
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: budget-service/create-budget-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/budgets
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  UpdateBudgetSpentLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: update-budget-spent-lambda
+      Description: Microservice for updating budget spent
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: budget-service/update-budget-spent-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt BudgetQueue.Arn
+            BatchSize: 10
+      Layers:
+        - !Ref CommonLayer
+
+  CreateBudgetCategoryLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-budget-category-lambda
+      Description: Microservice for creating budget category
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: budget-service/create-budget-category-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/budgets/categories
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  GetBudgetLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-budget-lambda
+      Description: Microservice for getting budget details
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: budget-service/get-budget-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/budgets/{id}
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  ListBudgetsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-budgets-lambda
+      Description: Microservice for getting list of budgets
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: budget-service/list-budgets-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/budgets
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  CreateReportLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-report-lambda
+      Description: Microservice for creating reports
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: report-service/create-report-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/reports
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  GetReportLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-report-lambda
+      Description: Microservice for getting report details
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: report-service/get-report-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/reports/{id}
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  ListReportsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-reports-lambda
+      Description: Microservice for getting list of reports
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: report-service/list-reports-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/reports
             Method: GET
             RestApiId:
               Ref: BudgetifyAPI

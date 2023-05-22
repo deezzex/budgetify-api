@@ -1,4 +1,4 @@
-package com.budgetify.conts;
+package com.budgetify.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,6 +31,20 @@ public class SQLQuery {
     //CATEGORY
     public static final String SELECT_CATEGORY_BY_ID = "SELECT * FROM categories WHERE id = ?;";
     public static final String SELECT_CATEGORIES = "SELECT * FROM categories;";
+    //BUDGET
+    public static final String SELECT_BUDGET_BY_ID = "SELECT * FROM budgets WHERE id = ?;";
+    public static final String SELECT_BUDGETS = "SELECT * FROM budgets;";
+    public static final String SELECT_BUDGETS_BY_ACCOUNT_ID = "SELECT * FROM budgets WHERE account_id = ?;";
+    public static final String UPDATE_BUDGET_SPENT = "UPDATE budgets SET spent = ? WHERE id = ?;";
+    //BUDGET CATEGORY
+    public static final String SELECT_BUDGET_CATEGORY_BY_ID = "SELECT * FROM budget_categories WHERE id = ?;";
+    public static final String SELECT_BUDGET_CATEGORIES = "SELECT * FROM budget_categories;";
+    public static final String SELECT_BUDGET_CATEGORIES_BY_BUDGET_ID = "SELECT * FROM budget_categories WHERE budget_id = ?;";
+    public static final String SELECT_BUDGET_CATEGORIES_BY_CATEGORY_ID = "SELECT * FROM budget_categories WHERE category_id = ?;";
+    //REPORT
+    public static final String SELECT_REPORT_BY_ID = "SELECT * FROM reports WHERE id = ?;";
+    public static final String SELECT_REPORTS = "SELECT * FROM reports;";
+    public static final String SELECT_REPORTS_BY_BUDGET_ID = "SELECT * FROM reports WHERE budget_id = ?;";
 
     //RESOURCE
     public static final String SELECT_ACCOUNT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = ?;";
@@ -38,5 +52,4 @@ public class SQLQuery {
     public static final String SELECT_BUDGET_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM budgets WHERE id = ?);";
     public static final String SELECT_REPORT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM budgets WHERE id = (SELECT budget_id FROM reports WHERE id = ?));";
     public static final String SELECT_DEPOSIT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = (SELECT account_id FROM deposits WHERE id = ?);";
-
 }

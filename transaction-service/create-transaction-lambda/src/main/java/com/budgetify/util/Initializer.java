@@ -4,6 +4,7 @@ import com.budgetify.config.DataSourceConfig;
 import com.budgetify.dao.*;
 import com.budgetify.security.AuthorityService;
 import com.budgetify.security.SecurityService;
+import com.budgetify.service.BudgetService;
 import com.budgetify.service.TransactionService;
 import lombok.Getter;
 
@@ -19,7 +20,10 @@ public class Initializer {
     private final TransactionDao transactionDao;
     private final BaseCategoryDao categoryDao;
     private final BaseUserDao userDao;
+    private final BudgetDao budgetDao;
+    private final BaseBudgetCategoryDao budgetCategoryDao;
     private final TransactionService transactionService;
+    private final BudgetService budgetService;
     private final ResourceDao resourceDao;
     private final AuthorityService authorityService;
 
@@ -31,7 +35,10 @@ public class Initializer {
         transactionDao = new TransactionDao(dataSource);
         categoryDao = new BaseCategoryDao(dataSource);
         userDao = new BaseUserDao(dataSource);
-        transactionService = new TransactionService(transactionDao, categoryDao, accountDao);
+        budgetDao = new BudgetDao(dataSource);
+        budgetCategoryDao = new BaseBudgetCategoryDao(dataSource);
+        budgetService = new BudgetService(budgetDao, budgetCategoryDao);
+        transactionService = new TransactionService(transactionDao, categoryDao, accountDao, budgetService);
         resourceDao = new ResourceDao(dataSource);
         authorityService = new AuthorityService(userDao, resourceDao);
     }

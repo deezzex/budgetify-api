@@ -1,6 +1,6 @@
 package com.budgetify.dao;
 
-import com.budgetify.conts.SQLQuery;
+import com.budgetify.constant.SQLQuery;
 import com.budgetify.entity.User;
 import com.budgetify.entity.mapper.UserMapper;
 import com.budgetify.exception.ApiException;

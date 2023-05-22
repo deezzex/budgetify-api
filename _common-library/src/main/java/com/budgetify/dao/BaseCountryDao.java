@@ -1,6 +1,6 @@
 package com.budgetify.dao;
 
-import com.budgetify.conts.SQLQuery;
+import com.budgetify.constant.SQLQuery;
 import com.budgetify.entity.Country;
 import com.budgetify.entity.mapper.CountryMapper;
 import com.budgetify.exception.ApiException;

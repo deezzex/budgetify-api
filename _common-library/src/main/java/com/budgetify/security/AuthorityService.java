@@ -1,7 +1,7 @@
 package com.budgetify.security;
 
-import com.budgetify.conts.Resource;
-import com.budgetify.conts.Role;
+import com.budgetify.constant.Resource;
+import com.budgetify.constant.Role;
 import com.budgetify.dao.BaseUserDao;
 import com.budgetify.dao.ResourceDao;
 import com.budgetify.entity.User;
