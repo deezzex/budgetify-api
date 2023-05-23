@@ -45,6 +45,10 @@ public class SQLQuery {
     public static final String SELECT_REPORT_BY_ID = "SELECT * FROM reports WHERE id = ?;";
     public static final String SELECT_REPORTS = "SELECT * FROM reports;";
     public static final String SELECT_REPORTS_BY_BUDGET_ID = "SELECT * FROM reports WHERE budget_id = ?;";
+    //DEPOSIT
+    public static final String SELECT_DEPOSIT_BY_ID = "SELECT * FROM deposits WHERE id = ?;";
+    public static final String SELECT_DEPOSITS = "SELECT * FROM deposits;";
+    public static final String SELECT_DEPOSITS_BY_ACCOUNT_ID = "SELECT * FROM deposits WHERE account_id = ?;";
 
     //RESOURCE
     public static final String SELECT_ACCOUNT_USER_ID_BY_ID = "SELECT user_id FROM accounts WHERE id = ?;";

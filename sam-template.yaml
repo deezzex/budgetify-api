@@ -772,3 +772,147 @@ Resources:
               Ref: BudgetifyAPI
       Layers:
         - !Ref CommonLayer
+
+  CreateDepositLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-deposit-lambda
+      Description: Microservice for creating deposits
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: deposit-service/create-deposit-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/deposits
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  CloseDepositLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: close-deposit-lambda
+      Description: Microservice for closing deposits
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: deposit-service/close-deposit-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/deposits/{id}
+            Method: PUT
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  GetDepositLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-deposit-lambda
+      Description: Microservice for getting deposit details
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: deposit-service/get-deposit-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/deposits/{id}
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  ListDepositsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-deposits-lambda
+      Description: Microservice for getting list of deposits
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: deposit-service/list-deposits-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/deposits
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer

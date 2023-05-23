@@ -31,7 +31,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
             return new APIGatewayProxyResponseEvent()
                     .withBody(gson.toJson(budgetResponseDto))
-                    .withStatusCode(201);
+                    .withStatusCode(200);
         } catch (Exception exception) {
             return new APIGatewayProxyResponseEvent()
                     .withBody(gson.toJson(exception.getMessage()))
