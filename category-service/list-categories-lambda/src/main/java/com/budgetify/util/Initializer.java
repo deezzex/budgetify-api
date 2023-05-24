@@ -1,10 +1,13 @@
 package com.budgetify.util;
 
 import com.budgetify.config.DataSourceConfig;
-import com.budgetify.dao.*;
+import com.budgetify.dao.BaseCategoryDao;
+import com.budgetify.dao.BaseSessionDao;
+import com.budgetify.dao.BaseUserDao;
+import com.budgetify.dao.ResourceDao;
 import com.budgetify.security.AuthorityService;
 import com.budgetify.security.SecurityService;
-import com.budgetify.service.ReportService;
+import com.budgetify.service.CategoryService;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -15,13 +18,9 @@ public class Initializer {
     private final DataSource dataSource;
     private final BaseSessionDao sessionDao;
     private final SecurityService securityService;
-    private final BaseAccountDao accountDao;
-    private final ReportDao reportDao;
-    private final BaseBudgetDao budgetDao;
-    private final BaseCategoryDao categoryDao;
-    private final TransactionDao transactionDao;
     private final BaseUserDao userDao;
-    private final ReportService reportService;
+    private final BaseCategoryDao categoryDao;
+    private final CategoryService categoryService;
     private final ResourceDao resourceDao;
     private final AuthorityService authorityService;
 
@@ -29,13 +28,9 @@ public class Initializer {
         dataSource = DataSourceConfig.getDataSource();
         sessionDao = new BaseSessionDao(dataSource);
         securityService = new SecurityService(sessionDao);
-        accountDao = new BaseAccountDao(dataSource);
-        reportDao = new ReportDao(dataSource);
         userDao = new BaseUserDao(dataSource);
-        transactionDao = new TransactionDao(dataSource);
-        budgetDao = new BaseBudgetDao(dataSource);
         categoryDao = new BaseCategoryDao(dataSource);
-        reportService = new ReportService(reportDao, budgetDao, accountDao, transactionDao, categoryDao);
+        categoryService = new CategoryService(categoryDao);
         resourceDao = new ResourceDao(dataSource);
         authorityService = new AuthorityService(userDao, resourceDao);
     }

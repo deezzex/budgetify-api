@@ -1,22 +1,17 @@
 package com.budgetify.service;
 
 import com.budgetify.constant.Formatter;
-import com.budgetify.dao.BaseAccountDao;
-import com.budgetify.dao.BaseBudgetDao;
-import com.budgetify.dao.ReportDao;
-import com.budgetify.dao.TransactionDao;
+import com.budgetify.dao.*;
 import com.budgetify.dto.ReportCreateDto;
 import com.budgetify.dto.ReportResponseDto;
-import com.budgetify.entity.Account;
-import com.budgetify.entity.Budget;
-import com.budgetify.entity.Report;
-import com.budgetify.entity.Transaction;
+import com.budgetify.entity.*;
 import com.budgetify.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -28,6 +23,7 @@ public class ReportService {
     private final BaseBudgetDao budgetDao;
     private final BaseAccountDao accountDao;
     private final TransactionDao transactionDao;
+    private final BaseCategoryDao categoryDao;
 
     public ReportResponseDto createReport(ReportCreateDto reportCreateDto) {
         Budget budget = budgetDao.findById(reportCreateDto.getBudgetId());
@@ -52,20 +48,31 @@ public class ReportService {
     private Report buildReport(ReportCreateDto reportCreateDto, Budget budget) {
         Account account = accountDao.findById(budget.getAccountId());
         List<Transaction> transactions = transactionDao.findAllByAccountId(account.getId());
+        List<Category> categories = categoryDao.findAll();
+        List<Transaction> debitTransactions = new ArrayList<>();
+
+        for (Transaction transaction : transactions){
+            String type = getTransactionType(transaction, categories);
+
+            if (type.equals("D")){
+                debitTransactions.add(transaction);
+            }
+        }
+
         LocalDateTime reportCreatedAt = LocalDateTime.parse(reportCreateDto.getCreatedAt(), Formatter.DATETIME_FORMATTER);
 
-        transactions = transactions.stream()
+        debitTransactions = debitTransactions.stream()
                 .filter(transaction -> transaction.getSettledAt().isBefore(reportCreatedAt))
                 .collect(Collectors.toList());
 
-        if (transactions.isEmpty()) {
+        if (debitTransactions.isEmpty()) {
             throw new ApiException("No transactions to report.");
         }
 
-        Optional<BigDecimal> min = transactions.stream().map(Transaction::getAmount).min(BigDecimal::compareTo);
-        Optional<BigDecimal> max = transactions.stream().map(Transaction::getAmount).max(BigDecimal::compareTo);
+        Optional<BigDecimal> min = debitTransactions.stream().map(Transaction::getAmount).min(BigDecimal::compareTo);
+        Optional<BigDecimal> max = debitTransactions.stream().map(Transaction::getAmount).max(BigDecimal::compareTo);
 
-        OptionalDouble average = transactions.stream()
+        OptionalDouble average = debitTransactions.stream()
                 .map(Transaction::getAmount)
                 .collect(Collectors.toList())
                 .stream()
@@ -76,11 +83,21 @@ public class ReportService {
                 .budgetId(reportCreateDto.getBudgetId())
                 .createdAt(reportCreatedAt)
                 .avgSpent(BigDecimal.valueOf(average.getAsDouble()))
-                .mediumSpent(BigDecimal.valueOf(findMiddle(transactions)))
+                .mediumSpent(BigDecimal.valueOf(findMiddle(debitTransactions)))
                 .maxSpent(max.get())
                 .minSpent(min.get())
-                .numberOfTransactions(transactions.size())
+                .numberOfTransactions(debitTransactions.size())
                 .build();
+    }
+
+    private String getTransactionType(Transaction transaction, List<Category> categories) {
+        Optional<Category> transactionCategory = categories.stream().filter(category -> category.getId().equals(transaction.getCategoryId())).findFirst();
+
+        if (transactionCategory.isEmpty()){
+            throw new ApiException("Invalid transaction category.");
+        }
+
+        return transactionCategory.get().getType();
     }
 
     private double findMiddle(List<Transaction> transactions) {

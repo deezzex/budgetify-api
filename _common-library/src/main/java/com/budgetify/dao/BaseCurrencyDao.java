@@ -25,4 +25,8 @@ public class BaseCurrencyDao {
 
         return currencies.get(0);
     }
+
+    public List<Currency> findAll() {
+        return jdbcTemplate.query(SQLQuery.SELECT_CURRENCIES, new CurrencyMapper());
+    }
 }

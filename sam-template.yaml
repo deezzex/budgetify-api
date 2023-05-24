@@ -49,12 +49,6 @@ Resources:
       Description: Common library
       LayerName: common-layer
 
-  BudgetQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: budgets.fifo
-      FifoQueue: true
-
   CreateUserLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -523,40 +517,6 @@ Resources:
       Layers:
         - !Ref CommonLayer
 
-  UpdateBudgetSpentLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: update-budget-spent-lambda
-      Description: Microservice for updating budget spent
-      Handler: com.budgetify.Handler::handleRequest
-      Runtime: java11
-      MemorySize: 512
-      Policies: AWSLambdaBasicExecutionRole
-      Timeout: 30
-      CodeUri: budget-service/update-budget-spent-lambda
-      Role: !Ref iamRole
-      Environment:
-        Variables:
-          DB_ENDPOINT: !Ref dbEndpoint
-          DB_NAME: !Ref dbName
-          DB_USERNAME: !Ref dbUsername
-          DB_PASSWORD: !Ref dbPassword
-      VpcConfig:
-        SecurityGroupIds:
-          - !Ref securityGroup
-        SubnetIds:
-          - !Ref subnetId1
-          - !Ref subnetId2
-          - !Ref subnetId3
-      Events:
-        MySQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt BudgetQueue.Arn
-            BatchSize: 10
-      Layers:
-        - !Ref CommonLayer
-
   CreateBudgetCategoryLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -911,6 +871,222 @@ Resources:
           Type: Api
           Properties:
             Path: /api/deposits
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  CreateCategoryLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-category-lambda
+      Description: Microservice for creating category
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: category-service/create-category-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/categories
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  ListCategoriesLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-categories-lambda
+      Description: Microservice for getting list of categories
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: category-service/list-categories-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/categories
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  CreateCountryLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-country-lambda
+      Description: Microservice for creating country
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: country-service/create-country-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/countries
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  ListCountriesLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-countries-lambda
+      Description: Microservice for getting list of countries
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: country-service/list-countries-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/countries
+            Method: GET
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  CreateCurrencyLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: create-currency-lambda
+      Description: Microservice for creating currency
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: currency-service/create-currency-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/currencies
+            Method: POST
+            RestApiId:
+              Ref: BudgetifyAPI
+      Layers:
+        - !Ref CommonLayer
+
+  ListCurrenciesLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: list-currencies-lambda
+      Description: Microservice for getting list of currencies
+      Handler: com.budgetify.Handler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      CodeUri: currency-service/list-currencies-lambda
+      Role: !Ref iamRole
+      Environment:
+        Variables:
+          DB_ENDPOINT: !Ref dbEndpoint
+          DB_NAME: !Ref dbName
+          DB_USERNAME: !Ref dbUsername
+          DB_PASSWORD: !Ref dbPassword
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref securityGroup
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+          - !Ref subnetId3
+      Events:
+        BudgetifyAPI:
+          Type: Api
+          Properties:
+            Path: /api/currencies
             Method: GET
             RestApiId:
               Ref: BudgetifyAPI

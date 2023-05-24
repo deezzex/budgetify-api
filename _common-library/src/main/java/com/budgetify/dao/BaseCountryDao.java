@@ -26,4 +26,8 @@ public class BaseCountryDao {
 
         return countries.get(0);
     }
+
+    public List<Country> findAll() {
+        return jdbcTemplate.query(SQLQuery.SELECT_COUNTRIES, new CountryMapper());
+    }
 }
