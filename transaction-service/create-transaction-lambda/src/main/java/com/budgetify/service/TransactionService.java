@@ -36,10 +36,10 @@ public class TransactionService {
 
         transaction.setId(transactionId);
 
-        budgetService.updateBudgetSpent(transaction);
-//        SQSSender.sendMessage(transaction);
+        boolean limitReached = budgetService.updateBudgetSpent(transaction);
 
         return TransactionResponseDto.builder()
+                .statusMessage(limitReached ? "Budget limit is reached." : "Success.")
                 .id(transactionId)
                 .accountId(account.getId())
                 .accountName(account.getName())

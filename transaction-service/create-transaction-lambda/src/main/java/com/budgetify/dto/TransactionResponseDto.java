@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class TransactionResponseDto {
+    private String statusMessage;
     private Integer id;
     private Integer accountId;
     private String accountName;

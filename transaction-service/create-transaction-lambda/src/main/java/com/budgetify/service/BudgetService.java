@@ -1,7 +1,6 @@
 package com.budgetify.service;
 
 import com.budgetify.dao.BaseBudgetCategoryDao;
-import com.budgetify.dao.BaseTransactionDao;
 import com.budgetify.dao.BudgetDao;
 import com.budgetify.entity.Budget;
 import com.budgetify.entity.BudgetCategory;
@@ -12,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,7 +19,8 @@ public class BudgetService {
     private final BudgetDao budgetDao;
     private final BaseBudgetCategoryDao baseBudgetCategoryDao;
 
-    public void updateBudgetSpent(Transaction transaction) {
+    public boolean updateBudgetSpent(Transaction transaction) {
+        AtomicBoolean limitReached = new AtomicBoolean(false);
         List<Budget> budgets = budgetDao.findAllByAccountId(transaction.getAccountId());
         List<BudgetCategory> budgetCategories = baseBudgetCategoryDao.findAllByCategoryId(transaction.getCategoryId());
         log.info("Transaction: {}", transaction);
@@ -37,15 +38,19 @@ public class BudgetService {
                         log.info("Update...");
                         BigDecimal newSpent = budget.getSpent().add(transaction.getAmount());
 
-                        if (newSpent.compareTo(budget.getLimit()) > 0) {
-                            //TODO: SEND NOTIFICATION
+                        budget.setSpent(newSpent);
+
+                        if (budget.getSpent().compareTo(budget.getLimit()) > 0) {
+                            limitReached.set(true);
                             log.info("Limit reached.");
                         }
 
-                        budgetDao.updateSpent(budget, newSpent);
+                        budgetDao.updateSpent(budget);
                     }
                 }
             });
         });
+
+        return limitReached.get();
     }
 }

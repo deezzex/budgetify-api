@@ -19,8 +19,8 @@ public class Initializer {
     private final AccountDao accountDao;
     private final TransactionDao transactionDao;
     private final BaseCategoryDao categoryDao;
-    private final BaseUserDao userDao;
     private final BudgetDao budgetDao;
+    private final UserDao userDao;
     private final BaseBudgetCategoryDao budgetCategoryDao;
     private final TransactionService transactionService;
     private final BudgetService budgetService;
@@ -34,9 +34,9 @@ public class Initializer {
         accountDao = new AccountDao(dataSource);
         transactionDao = new TransactionDao(dataSource);
         categoryDao = new BaseCategoryDao(dataSource);
-        userDao = new BaseUserDao(dataSource);
         budgetDao = new BudgetDao(dataSource);
         budgetCategoryDao = new BaseBudgetCategoryDao(dataSource);
+        userDao = new UserDao(dataSource);
         budgetService = new BudgetService(budgetDao, budgetCategoryDao);
         transactionService = new TransactionService(transactionDao, categoryDao, accountDao, budgetService);
         resourceDao = new ResourceDao(dataSource);
